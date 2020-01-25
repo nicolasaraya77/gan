@@ -11,10 +11,6 @@ import torchvision.transforms.functional as F
 import torch.nn as nn
 import torch.optim as optim
 
-
-
-
-
 class dset(Dataset):
     def __init__(self,data_dir,transform=None):
 
@@ -39,13 +35,10 @@ class dset(Dataset):
         #matrix = self.graph.iloc[index,0:8].values
         array = np.column_stack((n,m))
 
-
         return array
 
+
 """ inicializacion de datos """
-
-
-
 data = dset("data/dset.csv")
 data_in_array = np.array(data)
 
@@ -75,18 +68,18 @@ plt.show()
 class Generador(nn.Module):
     def __init__(self):
         super(Generador, self).__init__()
-
         self.main = nn.Sequential(
-
-
             nn.ReLU(True),
-            nn.Linear(2,2,bias=True)
+            nn.Linear(m+n, (m+n)/2, bias=True)
+            nn.Linear((m+n)/2, m, bias=True) 
+            # valor de M tiene que ser (0,100)
+            # debe botar cualquiera
         )
 
+    # input = arreglo de M
     def forward(self, input):
         return self.main(input)
-
-
+        # retornar un arreglo de M's con algun M caido.
 
 netG = Generador()
 print(netG)
@@ -97,19 +90,27 @@ print(netG)
 class Discriminador(nn.Module):
     def __init__(self):
         super(Discriminador, self).__init__()
-
         self.main = nn.Sequential(
-        nn.ReLU(True),
-        nn.Sigmoid(),
-
-        nn.Tanh()
-
+            nn.ReLU(True),
+            nn.Sigmoid(),
+            nn.Tanh()
         )
-
+    # input = arreglo largo M (obtenido desde generadora)
     def forward(self, input):
+        # - Toma el arreglo de largo M y los operadores N
+        # - escupe en arreglo de largo N, con valores desde (0, M-1)
+        #   Distribuyendo la carga de los servidores en base a el % de c/u
+        # - Recalcular valores de M en base a la carga de operadores en 
+        #   cada maquina
+        # - Dependiendo de la distribucion de los nodos, verificar si se puede
+        #   resolver mediante una funcion.
+        
+
+        # IMPORTANTE : Definir con que cosa va a comparar el resultado.
         return self.main(input)
 
-
+# Formula para calcular % de cada servidor
+# codeado en learn.py
 
 netD = Discriminador()
 print(netD)

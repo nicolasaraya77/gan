@@ -45,7 +45,6 @@ f.close()
 # ==================================
 
 
-
 # size can be greater or equal than 9
 def fillN(size) :
     n = [i+1 for i in range(9) ]
